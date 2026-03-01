@@ -27,3 +27,17 @@ jobs:
           echo "Запуск тестов..."
           # Просто выведем версию, так как тестов пока нет
           pytest --version || echo "Pytest пока не установлен, но пайплайн работает!"
+      - name: Send Telegram notification
+        # Этот шаг сработает только если ТЕСТЫ упали
+        if: failure()
+        uses: appleboy/telegram-action@master
+        with:
+          to: ${{ secrets.TELEGRAM_TO }}
+          token: ${{ secrets.TELEGRAM_TOKEN }}
+          message: |
+            ❌ Пайплайн упал!
+            Репозиторий: ${{ github.repository }}
+            Автор: ${{ github.actor }}
+            Посмотреть ошибку: https://github.com/${{ github.repository  }}/actions/runs/${{ github.run_id }}
+          
+        
